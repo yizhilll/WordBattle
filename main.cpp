@@ -1,10 +1,10 @@
-#include "wordbattlewindow.h"
-#include <QApplication>//所有的QT class都在这儿
+#include "mainwindow.h"
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    WordBattleWindow w;
+    MainWindow w;
     w.show();
 
     return a.exec();
