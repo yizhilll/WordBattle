@@ -18,12 +18,11 @@ public:
 
 private slots:
     void on_Button_Login_clicked();
-//    void receiveshow();
-
     void on_Button_Register_clicked();
+    void receiveshow();
 
 signals:
-    void showmainwindow();
+    void showrankwindow();
     void quit();
 
 private:

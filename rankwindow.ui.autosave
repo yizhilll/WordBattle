@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RankWindow</class>
+ <widget class="QWidget" name="RankWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QTableWidget" name="RankTable">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>60</y>
+     <width>621</width>
+     <height>351</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_rank">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>141</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 14pt &quot;Adobe Devanagari&quot;;</string>
+   </property>
+   <property name="text">
+    <string>闯关者排行</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Button_switch">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>切换</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Button_logout">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>注销</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="BS_u">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>430</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>按用户名排序</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="BS_s">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>430</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>按关数排序</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="BS_l">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>430</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>按等级排序</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="BS_t">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>430</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>按时间排序</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Button_game">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>去玩游戏</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Button_check">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>查询用户</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

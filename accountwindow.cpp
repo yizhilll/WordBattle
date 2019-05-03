@@ -41,7 +41,7 @@ void AccountWindow::on_Button_Login_clicked()
     case 2:
         ui->Message_tip->setText("登录成功，现在进入...");
         this->hide();
-        emit showmainwindow();
+        emit showrankwindow();
         break;
     default:
         break;
@@ -63,4 +63,12 @@ void AccountWindow::on_Button_Register_clicked()
         ui->Message_tip->setText("注册失败，用户可能已存在");
     }
 
+}
+
+void AccountWindow::receiveshow()
+{
+    ui->Message_tip->setText("");
+    ui->Text_ac->setText("");
+    ui->Text_pd->setText("");
+    this->show();
 }

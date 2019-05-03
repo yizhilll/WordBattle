@@ -14,10 +14,11 @@ int main(int argc, char *argv[])
 
     MainWindow w(nullptr, &CA);
     AccountWindow aw(nullptr, &CA);
+    RankWindow rw(nullptr,&CA);
 
     //信号与槽之间进行关联
-    QObject::connect(&aw,SIGNAL(showmainwindow()),&w,SLOT(receivelogin()));
-
+    QObject::connect(&aw,SIGNAL(showrankwindow()),&rw,SLOT(receivelogin()));
+    QObject::connect(&rw,SIGNAL(logout()),&aw,SLOT(receiveshow()));
     aw.show();
 
 //    w.show();

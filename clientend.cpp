@@ -3,11 +3,11 @@
 //-------------------------------------
 UserControl::UserControl()
 {
-    this->current_user_name=QString("no_one");
+//    this->current_user_name=QString("no_one");
 }
 UserControl::~UserControl()
 {
-    this->current_user_name=QString("no_one");
+//    this->current_user_name=QString("no_one");
 }
 
 //-------------------------------------
@@ -97,17 +97,40 @@ int ClientAccess::LoginValid(QString username, QString password)
     }else{
         return 1;
     }
-
-//        for(int i=0;i<rec.count();i++){
-//            qDebug()<<rec.value(i);
-//        }
-
-//    while (query.next()) {
-//        QString name = query.value(0).toString();
-//        qDebug() << name;
-//    }
 }
 
+QList<QList<QString>> ClientAccess::SearchTop(QString type,QString attribute,int num)
+{
+    qDebug()<<"running searchtop";
+    QList<QList<QString>> r;
+    QString a1,a2,a3;
+    if("Challenger"==type){
+        a1=QString("c_stage");
+        a2=QString("c_level");
+        a3=QString("c_time");
+    }else{
+        a1=QString("v_stage");
+        a2=QString("v_level");
+        a3=QString("v_number");
+    }
+    QString q=QString("SELECT username, %1, %2, %3 \
+                    FROM users\
+                    ORDER BY %4 DESC\
+                    LIMIT %5;")\
+            .arg(a1).arg(a2).arg(a3).arg(attribute).arg(num);
+    QSqlQuery query=udb.exec(q);
+    qDebug()<<query.lastError();
+
+    while(query.next()){
+        QList<QString> tem;
+        for(int j=0;j<4;j++){
+            tem.append(query.value(j).toString());
+        }
+        r.append(tem);
+        qDebug()<<tem;
+    }
+    return r;
+}
 ClientAccess::~ClientAccess()
 {
 

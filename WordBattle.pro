@@ -40,7 +40,8 @@ HEADERS += \
 
 FORMS += \
         accountwindow.ui \
-        mainwindow.ui
+        mainwindow.ui \
+        rankwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
