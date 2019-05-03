@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,13 +26,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        accountwindow.cpp \
+        clientend.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        rankwindow.cpp
 
 HEADERS += \
-        mainwindow.h
+        accountwindow.h \
+        clientend.h \
+        mainwindow.h \
+        rankwindow.h
 
 FORMS += \
+        accountwindow.ui \
         mainwindow.ui
 
 # Default rules for deployment.
