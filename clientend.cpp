@@ -82,7 +82,7 @@ int ClientAccess::LoginValid(QString username, QString password)
 {
     QSqlQuery query=udb.exec(QString("SELECT * FROM users WHERE username='%1'").arg(username));//
     //find user
-    if(query.next()& query.value(0).toString()==username){
+    if(query.next() & (query.value(0).toString()==username)){
         qDebug()<<"user found";
     }else {
         qDebug()<< "no such user";
@@ -131,6 +131,61 @@ QList<QList<QString>> ClientAccess::SearchTop(QString type,QString attribute,int
     }
     return r;
 }
+
+QList<QList<QString>> ClientAccess::CheckUser(QString type, QString u, QString s, QString l,QString t)
+{
+    QList<QString> keywords({u,s,l,t});
+    QList<QString> attributes;
+    QList<QList<QString>> r;
+    attributes.append(QString("username"));
+    if("Challenger"==type){
+        attributes.append(QString("c_stage"));
+        attributes.append(QString("c_level"));
+        attributes.append(QString("c_time"));
+    }else{
+        attributes.append(QString("v_stage"));
+        attributes.append(QString("v_level"));
+        attributes.append(QString("v_number"));
+    }
+    int nonEmpty=0;
+    QString predicate("WHERE ");
+    for(int i=0;i<keywords.count();i++){
+        if(!keywords.at(i).isEmpty()){
+            nonEmpty=nonEmpty+1;
+            if(0==i){//username is string
+                predicate=predicate+QString("username like '%%1%' ").arg(keywords.at(i));
+            }else{
+                switch (nonEmpty) {
+                case 0:
+                    break;
+                case 1:
+                    predicate=predicate+QString("%1 = %2 ").arg(attributes.at(i)).arg(keywords.at(i));
+                    break;
+                default:
+                    predicate=predicate+QString("AND %1 = %2 ").arg(attributes.at(i)).arg(keywords.at(i));
+                    break;
+                }
+            }
+        }
+    }
+    QString qselect(QString("SELECT %1, %2, %3, %4 FROM users ")\
+                    .arg(attributes.at(0)).arg(attributes.at(1))\
+                    .arg(attributes.at(2)).arg(attributes.at(3)));
+    qDebug()<<"executing: "<<qselect+predicate;
+    QSqlQuery query=udb.exec(qselect+predicate);
+    qDebug()<<query.lastError();
+
+    while(query.next()){
+        QList<QString> tem;
+        for(int j=0;j<4;j++){
+            tem.append(query.value(j).toString());
+        }
+        r.append(tem);
+        qDebug()<<tem;
+    }
+    return r;
+}
+
 ClientAccess::~ClientAccess()
 {
 

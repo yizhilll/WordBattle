@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>480</height>
+    <height>526</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>60</y>
+     <y>130</y>
      <width>621</width>
      <height>351</height>
     </rect>
@@ -27,9 +27,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>20</y>
+     <y>90</y>
      <width>141</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -42,10 +42,10 @@
   <widget class="QPushButton" name="Button_switch">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>20</y>
+     <x>240</x>
+     <y>90</y>
      <width>71</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="text">
@@ -55,8 +55,8 @@
   <widget class="QPushButton" name="Button_logout">
    <property name="geometry">
     <rect>
-     <x>550</x>
-     <y>20</y>
+     <x>520</x>
+     <y>10</y>
      <width>71</width>
      <height>31</height>
     </rect>
@@ -68,8 +68,8 @@
   <widget class="QPushButton" name="BS_u">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>430</y>
+     <x>20</x>
+     <y>490</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -81,8 +81,8 @@
   <widget class="QPushButton" name="BS_s">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>430</y>
+     <x>150</x>
+     <y>490</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -94,8 +94,8 @@
   <widget class="QPushButton" name="BS_l">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>430</y>
+     <x>290</x>
+     <y>490</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -107,14 +107,148 @@
   <widget class="QPushButton" name="BS_t">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>430</y>
+     <x>430</x>
+     <y>490</y>
      <width>111</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>按时间排序</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Button_game">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>50</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>去玩游戏</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Button_check">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>71</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>查询用户</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_rank_2">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>90</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 14pt &quot;Adobe Devanagari&quot;;</string>
+   </property>
+   <property name="text">
+    <string>/查询结果</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>10</y>
+     <width>51</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>用户名</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_u">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>10</y>
+     <width>61</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_l">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>40</y>
+     <width>61</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>40</y>
+     <width>51</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>等  级</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_t">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>10</y>
+     <width>61</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>10</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>时      间</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_s">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>40</y>
+     <width>61</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>40</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>关卡/出题数</string>
    </property>
   </widget>
  </widget>

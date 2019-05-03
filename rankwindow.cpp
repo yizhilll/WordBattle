@@ -83,5 +83,47 @@ void RankWindow::on_BS_u_clicked()
 
 void RankWindow::on_BS_s_clicked()
 {
-
+    if("闯关者排行"==ui->label_rank->text()){
+        showChallengerRank("Challenger","c_stage",10);
+    }else{
+        showVocabulorRank("Vocabulor","v_stage",10);
+    }
 }
+
+void RankWindow::on_BS_l_clicked()
+{
+    if("闯关者排行"==ui->label_rank->text()){
+        showChallengerRank("Challenger","c_level",10);
+    }else{
+        showVocabulorRank("Vocabulor","v_level",10);
+    }
+}
+
+
+void RankWindow::on_BS_t_clicked()
+{
+    if("闯关者排行"==ui->label_rank->text()){
+        showChallengerRank("Challenger","c_time",10);
+    }else{
+        showVocabulorRank("Vocabulor","v_number",10);
+    }
+}
+
+void RankWindow::on_Button_check_clicked()
+{
+    QString u= ui->lineEdit_u->text();
+    QString s= ui->lineEdit_s->text();
+    QString l= ui->lineEdit_l->text();
+    QString t= ui->lineEdit_t->text();
+    QString checktype=("闯关者排行"==ui->label_rank->text())? "Challenger":"Vocabulor";
+    QList<QList<QString>> r=CA->CheckUser(checktype,u,s,l,t);
+    ui->RankTable->clearContents();
+    for(int i=0;i<r.count();i++){
+        for(int j=0;j<4;j++){
+            ui->RankTable->setItem(i,j,new QTableWidgetItem(r[i][j]));
+        }
+    }
+}
+
+
+

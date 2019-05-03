@@ -57,6 +57,8 @@ public:
     bool Register(QString username,QString password);
     int LoginValid(QString username,QString password);
     QList<QList<QString>> SearchTop(QString type="Challenger",QString attribute="c_stage",int num=10);
+    QList<QList<QString>> CheckUser(QString type, QString u,QString s,QString l,QString t);
+
 private:
        QSqlDatabase udb;
 };

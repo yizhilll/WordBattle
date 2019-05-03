@@ -32,6 +32,12 @@ private slots:
 
     void on_BS_s_clicked();
 
+    void on_Button_check_clicked();
+
+    void on_BS_l_clicked();
+
+    void on_BS_t_clicked();
+
 signals:
 //    void awshow();
     void logout();
