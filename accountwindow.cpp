@@ -34,6 +34,7 @@ void AccountWindow::on_Button_Login_clicked()
     switch(result_vld){
     case 0:
         ui->Message_tip->setText("找不到该用户名");
+//        ui->Message_tip->setText(CA->releaseDebug);
         break;
     case 1:
         ui->Message_tip->setText("密码错误，请重新输入");

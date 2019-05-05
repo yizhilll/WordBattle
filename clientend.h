@@ -59,6 +59,8 @@ public:
     QList<QList<QString>> SearchTop(QString type="Challenger",QString attribute="c_stage",int num=10);
     QList<QList<QString>> CheckUser(QString type, QString u,QString s,QString l,QString t);
 
+    QString releaseDebug;
+
 private:
        QSqlDatabase udb;
 };

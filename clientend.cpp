@@ -82,10 +82,12 @@ int ClientAccess::LoginValid(QString username, QString password)
 {
     QSqlQuery query=udb.exec(QString("SELECT * FROM users WHERE username='%1'").arg(username));//
     //find user
-    if(query.next() & (query.value(0).toString()==username)){
+    query.next();
+    if(query.value(0).toString()==username){
         qDebug()<<"user found";
     }else {
         qDebug()<< "no such user";
+//        this->releaseDebug = QString("%1").arg(query.lastError().text());//.arg(query.value(0).toString())
         return 0;
     }
     //match password

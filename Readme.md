@@ -50,6 +50,12 @@
 
 部分游戏设计思路参考 Qt Documentation 中的 [Tetrix Example](https://doc.qt.io/qt-5/qtwidgets-widgets-tetrix-example.html)。
 
+另外，关于数据库引擎的准备和release问题，本软件采取了**MYSQL**，也遇到了一些问题，诸如：
+
+- 安装对应 32bit/64bit 的 MYSQL C Connector（C++ Connector not working），并将其 `dll` 文件拷贝到相应的编译文件夹（如MinGW的bin）下。
+- 必须进入 Qt 提供的相应的 Prompt 来使用Qt官方的 `windeployqt` 进行Release，否则会有一些 `dll` 缺失
+- `windeployqt` 会忽略 `libmysql.dll` ，导致数据库驱动导入异常，必须手动拷贝到文件夹下。
+
 ### 游戏界面交互模块
 
 **程序功能划分：**
@@ -110,7 +116,7 @@
 | -------------------- | -------- | ---- |
 | 用户数据的存储       | 1        | S端  |
 | 请求更新用户数据信息 | 1        | C端  |
-|                      |          |      |
+| 请求用户数据         | 1        | C端  |
 
  `UserControl` 类来控制
 
@@ -121,16 +127,22 @@
 - 更新用户信息
 - 增加用户
 - 登录匹配
+- 查询排行榜用户
+- 查询匹配用户
 
 `UserInfo` 类是存储用户信息的基类，包含：
 
 - 用户名，关卡/数量，等级，经验值，游戏时间（min）属性
+
 - 计算经验值阈值升级的方法 `LevelUp`
+
 - 派生`Challenger` 类
+  
   - 
+  
 - 派生`Vocabulor` 类
 
-
+  
 
 `ServerAccess` 类在**S端**负责所有C端与S端的通讯。
 
