@@ -1,9 +1,17 @@
 #include "clientend.h"
 
 //-------------------------------------
-UserControl::UserControl()
+UserControl::UserControl(QString un,int cstage,int clevel,int cexp,int cacc,int vstage,int vlevel,int vexp,int vacc)
 {
-//    this->current_user_name=QString("no_one");
+    this->username=un;
+    ch->setStage(cstage);
+    ch->setLevel(clevel);
+    ch->setExp(cexp);
+    ch->setAccumulate(cacc);
+    vo->setStage(vstage);
+    vo->setLevel(vlevel);
+    vo->setExp(vexp);
+    vo->setAccumulate(vacc);
 }
 UserControl::~UserControl()
 {
@@ -12,7 +20,7 @@ UserControl::~UserControl()
 
 //-------------------------------------
 ClientAccess::ClientAccess()
-{
+{    
     //需要进行判断默认的连接名是否存在，
     //如果不存在才使用addDatabase()方法，如果存在则使用database()方法
     if(QSqlDatabase::contains("qt_sql_default_connection")){
@@ -95,6 +103,10 @@ int ClientAccess::LoginValid(QString username, QString password)
 
     if(h_password ==query.value(1).toString()){
         qDebug()<<"password match";
+        //load user information to local client
+        this->user=new UserControl(username,
+                                   query.value(2).toInt(),query.value(3).toInt(),query.value(4).toInt(),query.value(5).toInt(),
+                                   query.value(6).toInt(),query.value(7).toInt(),query.value(8).toInt(),query.value(9).toInt());
         return 2;
     }else{
         return 1;

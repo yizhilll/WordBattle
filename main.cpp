@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    UserControl user;
     ClientAccess CA;
 
     MainWindow w(nullptr, &CA);

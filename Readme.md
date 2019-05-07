@@ -136,13 +136,13 @@
 
 - 计算经验值阈值升级的方法 `LevelUp`
 
-- 派生`Challenger` 类
+- 派生`uChallenger` 类
   
-  - 
+  - 挑战者等级计算方式
   
-- 派生`Vocabulor` 类
+- 派生`uVocabulor` 类
 
-  
+  - 出题者等级计算方式
 
 `ServerAccess` 类在**S端**负责所有C端与S端的通讯。
 
