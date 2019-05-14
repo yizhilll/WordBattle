@@ -30,6 +30,7 @@ bool RankWindow::showChallengerRank(QString type,QString attribute,int num)
             ui->RankTable->setItem(i,j,new QTableWidgetItem(r[i][j]));
         }
     }
+//    return true;
 }
 bool RankWindow::showVocabulorRank(QString type,QString attribute,int num)
 {
@@ -45,6 +46,7 @@ bool RankWindow::showVocabulorRank(QString type,QString attribute,int num)
             ui->RankTable->setItem(i,j,new QTableWidgetItem(r[i][j]));
         }
     }
+//    return true;
 }
 
 void RankWindow::receivelogin()
@@ -57,6 +59,16 @@ void RankWindow::on_Button_logout_clicked()
 {
     this->hide();
     emit logout();
+    CA->DestoryUserWLogOut();
+}
+void RankWindow::receiveshow()
+{
+    this->show();
+}
+void RankWindow::on_Button_game_clicked()
+{
+    this->hide();
+    emit showvocaboard();
 }
 
 void RankWindow::on_Button_switch_clicked()
@@ -124,6 +136,7 @@ void RankWindow::on_Button_check_clicked()
         }
     }
 }
+
 
 
 

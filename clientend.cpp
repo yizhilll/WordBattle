@@ -1,8 +1,15 @@
 #include "clientend.h"
-
+//-------------------------------------
+int uVocabulor::addOneWord(QString word)
+{
+    setStage(Stage()+1);
+    setExp(Exp()+ word.size());
+}
 //-------------------------------------
 UserControl::UserControl(QString un,int cstage,int clevel,int cexp,int cacc,int vstage,int vlevel,int vexp,int vacc)
 {
+    this->ch=new uChallenger;
+    this->vo=new uVocabulor;
     this->username=un;
     ch->setStage(cstage);
     ch->setLevel(clevel);
@@ -15,7 +22,9 @@ UserControl::UserControl(QString un,int cstage,int clevel,int cexp,int cacc,int 
 }
 UserControl::~UserControl()
 {
-//    this->current_user_name=QString("no_one");
+
+    delete ch;
+    delete vo;
 }
 
 //-------------------------------------
@@ -61,6 +70,10 @@ ClientAccess::ClientAccess()
             password VARCHAR(1024),\
             c_stage INT DEFAULT 1, c_level INT DEFAULT 1, c_exp INT DEFAULT 0, c_time INT DEFAULT 0,\
             v_stage INT DEFAULT 1, v_level INT DEFAULT 1, v_exp INT DEFAULT 0, v_number INT DEFAULT 0);");
+            //test table existence
+    udb.exec("CREATE TABLE IF NOT EXISTS words \
+            (word VARCHAR(512) PRIMARY KEY,\
+            length INT NOT NULL, username VARCHAR(256), wdate DATE DEFAULT '2000-01-01');");
    if(udb.lastError().isValid()){
        qDebug() << udb.lastError();
        qDebug() << "Create table failed.";
@@ -88,7 +101,7 @@ bool ClientAccess::Register(QString username,QString password)
 
 int ClientAccess::LoginValid(QString username, QString password)
 {
-    QSqlQuery query=udb.exec(QString("SELECT * FROM users WHERE username='%1'").arg(username));//
+    QSqlQuery query=udb.exec(QString("SELECT * FROM users WHERE username='%1' LIMIT 1").arg(username));//
     //find user
     query.next();
     if(query.value(0).toString()==username){
@@ -199,8 +212,68 @@ QList<QList<QString>> ClientAccess::CheckUser(QString type, QString u, QString s
     }
     return r;
 }
+void ClientAccess::AddTime(int increase,QString type)
+{
+    if("challenger"==type){
+        user->ch->setAccumulate(increase+user->vo->Accumulate());
+    }else if("vocabulor"==type){
+        user->vo->setAccumulate(increase+user->vo->Accumulate());
+    }else{
+        qDebug()<<"wrong user type!";
+    }
+}
 
+int ClientAccess::AddWord(QString word)
+{
+    /* return 1 succeed
+     * return 0 exists or other database error
+     * return -1 spelling error
+     */
+    //TODO: spelling check
+    QString un=this->user->getUsername();
+    QString query = QString("INSERT INTO words(word,length,username,wdate)\
+                            VALUES('%1',%2,'%3','%4')").arg(word).arg(un.size()).arg(un).arg(QDate::currentDate().toString(QString("yyyy-MM-dd")));
+    QSqlQuery q = udb.exec(query);
+    if(udb.lastError().isValid()){
+        qDebug()<<"add new word failed.";
+        return 0;
+    }else{
+        qDebug()<<"add new word succeed.";
+        user->vo->addOneWord(word);
+        return 1;
+    }
+}
+
+QString ClientAccess::GetOneWord(int len,QString start)
+{
+    QString query = QString("SELECT *\
+                            FROM words AS t1 JOIN (SELECT ROUND(RAND() * ((SELECT MAX(id) FROM words)-(SELECT MIN(id) FROM words))+(SELECT MIN(id) FROM words)) AS id) AS t2 \
+                            WHERE t1.id >= t2.id AND \
+                            ORDER BY t1.id LIMIT 1;");
+    QSqlQuery q = udb.exec(query);
+    QString r=QString("emm no done");
+    while(q.next()){
+        for(int j=0;j<4;j++){
+            qDebug()<<q.value(j).toString();
+        }
+    }
+    return r;
+}
+void ClientAccess::DestoryUserWLogOut()
+{
+    //TODO: SAVE BEFORE DELETE
+    QString query=QString("UPDATE users \
+                   (SET\
+                   c_stage= %1, c_level= %2, c_exp= %3, c_time =%4,\
+                   v_stage= %5, v_level= %6, v_exp= %7, v_number=%8\
+                   WHERE username = '%9';")\
+                   .arg(user->ch->Stage()).arg(user->ch->Level()).arg(user->ch->Exp()).arg(user->ch->Accumulate())\
+                   .arg(user->vo->Stage()).arg(user->vo->Level()).arg(user->vo->Exp()).arg(user->vo->Accumulate())\
+                   .arg(user->getUsername());
+    udb.exec(query);
+    delete this->user;
+}
 ClientAccess::~ClientAccess()
 {
-
+    delete user;
 }

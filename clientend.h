@@ -13,6 +13,7 @@
 #include <QRegExpValidator>
 
 #include <QTime>
+#include <QTimer>
 
 
 
@@ -48,6 +49,7 @@ class uVocabulor:public UserInfo
 {
 public:
     int vLevel();
+    int addOneWord(QString word);//add exp and records to the user when a word is successfully added
 };
 
 
@@ -55,6 +57,8 @@ class UserControl
 {
 public:
     UserControl(QString un,int cstage,int clevel,int cexp,int cacc,int vstage,int vlevel,int vexp,int vacc);
+    QString getUsername(void){return this->username;}
+    void setUsername(QString un){this->username=un;}
     ~UserControl();
     uChallenger *ch;
     uVocabulor  *vo;
@@ -73,12 +77,17 @@ public:
     QList<QList<QString>> SearchTop(QString type="Challenger",QString attribute="c_stage",int num=10);
     QList<QList<QString>> CheckUser(QString type, QString u,QString s,QString l,QString t);
 
+    void AddTime(int increase,QString type);//add time with minute unit
+    int AddWord(QString word);//add the word to database
+    QString GetOneWord(int len,QString start);
+    void DestoryUserWLogOut();//save the user status to the database and exit.
     UserControl *user;
 
     QString releaseDebug;
 
 private:
-       QSqlDatabase udb;
+
+    QSqlDatabase udb;
 };
 
 #endif // CLIENTEND_H

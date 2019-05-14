@@ -27,21 +27,27 @@ CONFIG += c++11
 
 SOURCES += \
         accountwindow.cpp \
+        challengeboard.cpp \
         clientend.cpp \
         main.cpp \
         mainwindow.cpp \
-        rankwindow.cpp
+        rankwindow.cpp \
+        vocabularyboard.cpp
 
 HEADERS += \
         accountwindow.h \
+        challengeboard.h \
         clientend.h \
         mainwindow.h \
-        rankwindow.h
+        rankwindow.h \
+        vocabularyboard.h
 
 FORMS += \
         accountwindow.ui \
+        challengeboard.ui \
         mainwindow.ui \
-        rankwindow.ui
+        rankwindow.ui \
+        vocabularyboard.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

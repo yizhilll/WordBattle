@@ -21,8 +21,10 @@ private:
     Ui::RankWindow *ui;
     ClientAccess *CA;
 
+
 private slots:
     void receivelogin();
+    void receiveshow();
 
     void on_Button_logout_clicked();
 
@@ -38,8 +40,11 @@ private slots:
 
     void on_BS_t_clicked();
 
+    void on_Button_game_clicked();
+
 signals:
 //    void awshow();
+    void showvocaboard();
     void logout();
     void quit();
 
