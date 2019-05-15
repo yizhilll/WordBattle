@@ -42,13 +42,13 @@ void VocabularyBoard::timeINC()
 
 void VocabularyBoard::receiveshow()
 {
+    //TODO: SHOW USER INFORMATION
     this->show();
     timer->start(1*1000);
 }
 
 void VocabularyBoard::receiveHideAndStopTimer()
 {
-    //TODO: UPDATE AND SAVE USER INFORMATION
     timer->stop();
     this->hide();
     CA->AddTime((int)(playtime/60),"vocabulor");
@@ -59,7 +59,7 @@ void VocabularyBoard::receiveHideAndStopTimer()
 void VocabularyBoard::on_B_switch_clicked()
 {
     receiveHideAndStopTimer();
-    //TODO: SIGNAL
+    emit showchanllengeboard();
 }
 
 void VocabularyBoard::on_B_search_clicked()

@@ -15,6 +15,8 @@
 #include <QTime>
 #include <QTimer>
 
+#include <QFile>
+
 
 
 class UserInfo
@@ -42,7 +44,10 @@ private:
 class uChallenger:public UserInfo
 {
 public:
-    int cLevel();
+    int cLevel();//?
+    void stageUp(void){setStage(Stage()+1);}//the user will go to the next stage
+    int WordShowTime(int type);//return the duration(sec) a word should show depending on something
+    int nStageWord(void);//return the number of words this stage need to challenge
 };
 
 class uVocabulor:public UserInfo
@@ -78,11 +83,14 @@ public:
     QList<QList<QString>> CheckUser(QString type, QString u,QString s,QString l,QString t);
 
     void AddTime(int increase,QString type);//add time with minute unit
-    int AddWord(QString word);//add the word to database
-    QString GetOneWord(int len,QString start);
+    int AddWord(QString word,QString isDaddy="notsuperuser");//add the word to database
+    QString GetOneWord(int len,QString start);//randomly get one word with a specific length and starting character
     void DestoryUserWLogOut();//save the user status to the database and exit.
-    UserControl *user;
 
+    QString execSuperSQL(QString query);
+    QString loadCSV(QString filename="TOEFL核心词汇21天突破.CSV");
+
+    UserControl *user;
     QString releaseDebug;
 
 private:

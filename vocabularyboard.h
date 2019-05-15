@@ -25,7 +25,7 @@ private:
     Ui::VocabularyBoard *ui;
     ClientAccess *CA;
     int playtime;
-    void receiveHideAndStopTimer();
+    void receiveHideAndStopTimer();//TODO: UPDATE AND SAVE USER INFORMATION
 
 private slots:
     void receiveshow();
@@ -36,6 +36,7 @@ private slots:
 signals:
     void logout();
     void showsearchwindow();
+    void showchanllengeboard();
 
 };
 

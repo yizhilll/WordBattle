@@ -21,6 +21,8 @@ private slots:
     void on_Button_Register_clicked();
     void receiveshow();
 
+    void on_superEXEC_clicked();
+
 signals:
     void showrankwindow();
     void quit();

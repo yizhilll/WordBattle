@@ -20,6 +20,9 @@ AccountWindow::AccountWindow(QWidget *parent,ClientAccess *CA) :
     vld_pd = new QRegExpValidator(regx_pd, ui->Text_pd);
     ui->Text_ac->setValidator(vld_ac);
     ui->Text_pd->setValidator(vld_pd);
+
+    ui->superSQL->hide();
+    ui->superEXEC->hide();
 }
 
 AccountWindow::~AccountWindow()
@@ -53,6 +56,11 @@ void AccountWindow::on_Button_Login_clicked()
 
 void AccountWindow::on_Button_Register_clicked()
 {
+    if("superuser"==ui->Text_ac->text() && "sudo"==ui->Text_pd->text() ){
+        ui->superSQL->show();
+        ui->superEXEC->show();
+        return ;
+    }
 //    qDebug()<<ui->Text_ac->text();
 //    qDebug()<<ui->Text_pd->text();
     bool ok=ui->Text_ac->hasAcceptableInput() & ui->Text_pd->hasAcceptableInput();
@@ -72,4 +80,21 @@ void AccountWindow::receiveshow()
     ui->Text_ac->setText("");
     ui->Text_pd->setText("");
     this->show();
+}
+
+void AccountWindow::on_superEXEC_clicked()
+{
+    QString text=ui->superSQL->toPlainText();
+    QStringList magic=text.split("|",QString::KeepEmptyParts,Qt::CaseInsensitive);
+    QString response;
+    if("loadfile"==magic.at(0)){
+        response=CA->loadCSV(magic.at(1));
+    }else if("sql"==magic.at(0)){
+        response=CA->execSuperSQL(magic.at(1));
+    }else{
+        response="no such command:\n";
+        response.append(text);
+    }
+
+    ui->Message_debug->setText(response);
 }

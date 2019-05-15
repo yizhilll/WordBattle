@@ -1,5 +1,19 @@
 #include "clientend.h"
 //-------------------------------------
+int uChallenger::WordShowTime(int type)
+{
+    int r=5;//default show time 5s
+    if(type==1){
+        r=5;
+    }
+    return r;
+}
+int uChallenger::nStageWord(void)
+{
+    int r= 3 + 2* (int)(Stage()/3);
+    return r;
+}
+//-------------------------------------
 int uVocabulor::addOneWord(QString word)
 {
     setStage(Stage()+1);
@@ -79,7 +93,7 @@ ClientAccess::ClientAccess()
        qDebug() << "Create table failed.";
        return;
     }else{
-       qDebug()<<"Create table succeed.";
+       qDebug()<<"Load or create table succeed.";
     }
 }
 
@@ -223,16 +237,21 @@ void ClientAccess::AddTime(int increase,QString type)
     }
 }
 
-int ClientAccess::AddWord(QString word)
+int ClientAccess::AddWord(QString word,QString isDaddy)
 {
     /* return 1 succeed
      * return 0 exists or other database error
      * return -1 spelling error
      */
     //TODO: spelling check
-    QString un=this->user->getUsername();
+    QString un;
+    if("superuser"==isDaddy){
+        un="superuser";
+    }else{
+        un=this->user->getUsername();
+    }
     QString query = QString("INSERT INTO words(word,length,username,wdate)\
-                            VALUES('%1',%2,'%3','%4')").arg(word).arg(un.size()).arg(un).arg(QDate::currentDate().toString(QString("yyyy-MM-dd")));
+                            VALUES('%1',%2,'%3','%4')").arg(word).arg(word.size()).arg(un).arg(QDate::currentDate().toString(QString("yyyy-MM-dd")));
     QSqlQuery q = udb.exec(query);
     if(udb.lastError().isValid()){
         qDebug()<<"add new word failed.";
@@ -246,23 +265,35 @@ int ClientAccess::AddWord(QString word)
 
 QString ClientAccess::GetOneWord(int len,QString start)
 {
+    QString condition="";
+    if(len!=-1){
+        condition+= QString("WHERE length = %1" ).arg(len);
+    }
+
+    //a slow implementation   WHERE
     QString query = QString("SELECT *\
-                            FROM words AS t1 JOIN (SELECT ROUND(RAND() * ((SELECT MAX(id) FROM words)-(SELECT MIN(id) FROM words))+(SELECT MIN(id) FROM words)) AS id) AS t2 \
-                            WHERE t1.id >= t2.id AND \
-                            ORDER BY t1.id LIMIT 1;");
+                            FROM words %1\
+                            ORDER BY RAND()\
+                            LIMIT 1").arg(condition);
     QSqlQuery q = udb.exec(query);
+
+
     QString r=QString("emm no done");
-    while(q.next()){
+    if(!q.lastError().isValid() && q.next()){
         for(int j=0;j<4;j++){
             qDebug()<<q.value(j).toString();
         }
+        r=q.value(0).toString();
+    }else{
+        qDebug()<<"fail to fetch a word";
+        qDebug() << q.lastError().text();
     }
     return r;
 }
 void ClientAccess::DestoryUserWLogOut()
 {
     //TODO: SAVE BEFORE DELETE
-    QString query=QString("UPDATE users \
+    QString q=QString("UPDATE users \
                    (SET\
                    c_stage= %1, c_level= %2, c_exp= %3, c_time =%4,\
                    v_stage= %5, v_level= %6, v_exp= %7, v_number=%8\
@@ -270,9 +301,56 @@ void ClientAccess::DestoryUserWLogOut()
                    .arg(user->ch->Stage()).arg(user->ch->Level()).arg(user->ch->Exp()).arg(user->ch->Accumulate())\
                    .arg(user->vo->Stage()).arg(user->vo->Level()).arg(user->vo->Exp()).arg(user->vo->Accumulate())\
                    .arg(user->getUsername());
-    udb.exec(query);
+    udb.exec(q);
     delete this->user;
 }
+
+QString ClientAccess::execSuperSQL(QString query)
+{
+    QSqlQuery q= udb.exec(query);
+    if(q.lastError().isValid()){
+        return q.lastError().text();
+    }else{
+        return QString("SQL executed successfully");
+    }
+}
+QString ClientAccess::loadCSV(QString filename)
+{
+    int succount=0;
+    int failcount=0;
+    QString response;
+    //default file is "TOEFL核心词汇21天突破.CSV"
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly)) {
+
+        int lineindex = 0;                     // file line counter
+        QTextStream in(&file);                 // read to text stream
+
+        while (!in.atEnd()) {
+
+            // read one line from textstream(separated by "\n")
+            QString fileLine = in.readLine();
+
+            // parse the read line into separate pieces(tokens) with "," as the delimiter
+            QStringList lineToken = fileLine.split(",", QString::SkipEmptyParts);
+            qDebug()<<lineToken;
+            if(0==AddWord(lineToken.at(0),"superuser")){
+                failcount++;
+            }else{
+                succount++;
+            }
+            lineindex++;
+        }
+
+        file.close();
+        response=QString("load csv file successfully\nsucceed in %1 words\nfail at %2 words").arg(succount).arg(failcount);
+    }else{
+        response=QString("open csv file fail");
+        qDebug()<<response;
+    }
+    return response;
+}
+
 ClientAccess::~ClientAccess()
 {
     delete user;
