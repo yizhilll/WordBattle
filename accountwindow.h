@@ -25,6 +25,8 @@ private slots:
 
 signals:
     void showrankwindow();
+    void showchanllengeboard();
+    void cbsetup();
     void quit();
 
 private:

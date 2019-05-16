@@ -24,6 +24,9 @@ private slots:
 private:
     Ui::VocabularyBoard *ui;
     ClientAccess *CA;
+
+    void refreshStatus();
+
     int playtime;
     void receiveHideAndStopTimer();//TODO: UPDATE AND SAVE USER INFORMATION
 

@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
 
     //信号与槽之间进行关联
     QObject::connect(&aw,SIGNAL(showrankwindow()),&rw,SLOT(receivelogin()));
+    QObject::connect(&aw,SIGNAL(showchanllengeboard()),&cb,SLOT(receiveshow()));
+    QObject::connect(&aw,SIGNAL(cbsetup()),&cb,SLOT(setup()));
 
     QObject::connect(&rw,SIGNAL(logout()),&aw,SLOT(receiveshow()));
     QObject::connect(&rw,SIGNAL(showvocaboard()),&vb,SLOT(receiveshow()));

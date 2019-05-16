@@ -32,7 +32,10 @@ public:
     int setLevel(int x=1){return level=x;}
     int setExp(int x=0){return exp=x;}
     int setAccumulate(int x=0){return accumulate=x;}
-
+//  calculate how much experience needed for current stage to level up
+    int expToNext(void){ return Stage()*(Stage()+5)*10;}
+    void stageUp(void){setStage(Stage()+1);}
+    void levelUp(void){setLevel(Level()+1);}
 private:
 //    QString username;
     int stage;//stage for challenger; word number for examiner
@@ -44,17 +47,18 @@ private:
 class uChallenger:public UserInfo
 {
 public:
-    int cLevel();//?
-    void stageUp(void){setStage(Stage()+1);}//the user will go to the next stage
+    //the user will go to the next stage
     int WordShowTime(int type);//return the duration(sec) a word should show depending on something
     int nStageWord(void);//return the number of words this stage need to challenge
+    int addExp(QString winword,QString type="local");
+    int wordLength(void);
 };
 
 class uVocabulor:public UserInfo
 {
 public:
-    int vLevel();
     int addOneWord(QString word);//add exp and records to the user when a word is successfully added
+    int addExp(QString winword);
 };
 
 
@@ -85,6 +89,7 @@ public:
     void AddTime(int increase,QString type);//add time with minute unit
     int AddWord(QString word,QString isDaddy="notsuperuser");//add the word to database
     QString GetOneWord(int len,QString start);//randomly get one word with a specific length and starting character
+    void SaveUserToDatabase();
     void DestoryUserWLogOut();//save the user status to the database and exit.
 
     QString execSuperSQL(QString query);

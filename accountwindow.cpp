@@ -43,9 +43,11 @@ void AccountWindow::on_Button_Login_clicked()
         ui->Message_tip->setText("密码错误，请重新输入");
         break;
     case 2:
+        emit cbsetup();
         ui->Message_tip->setText("登录成功，现在进入...");
         this->hide();
-        emit showrankwindow();
+        emit showchanllengeboard();
+        emit cbsetup();
         break;
     default:
         break;

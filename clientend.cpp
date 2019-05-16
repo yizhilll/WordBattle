@@ -13,11 +13,44 @@ int uChallenger::nStageWord(void)
     int r= 3 + 2* (int)(Stage()/3);
     return r;
 }
+int uChallenger::addExp(QString winword, QString type)
+{
+    //TODO if("local"==type){}else{}
+    int reward=(int)winword.size()*(Stage()*0.5+ Level() +Accumulate()*0.01)*4;
+    reward = reward>0.35*expToNext()? 0.35*expToNext():reward;
+    int exp= reward+(int)0.05* expToNext();
+    if(exp+Exp()>expToNext()){
+        levelUp();
+        setExp(exp+Exp()-expToNext());
+        return 1;//level up
+    }else{
+        setExp(exp+Exp());
+        return 0;//not level up
+    }
+}
+int uChallenger::wordLength(void)
+{
+    int len= 3+(int)Stage()*0.2;
+    return len>7? 7:len;
+}
 //-------------------------------------
 int uVocabulor::addOneWord(QString word)
 {
     setStage(Stage()+1);
     setExp(Exp()+ word.size());
+}
+
+int uVocabulor::addExp(QString winword)
+{
+    int exp= (int)winword.size()*(Stage()*0.01+ Level() +Accumulate()*0.01)*10;
+    if(exp+Exp()>expToNext()){
+        levelUp();
+        setExp(exp+Exp()-expToNext());
+        return 1;//level up
+    }else{
+        setExp(exp+Exp());
+        return 0;//not level up
+    }
 }
 //-------------------------------------
 UserControl::UserControl(QString un,int cstage,int clevel,int cexp,int cacc,int vstage,int vlevel,int vexp,int vacc)
@@ -237,6 +270,7 @@ void ClientAccess::AddTime(int increase,QString type)
     }
 }
 
+
 int ClientAccess::AddWord(QString word,QString isDaddy)
 {
     /* return 1 succeed
@@ -245,20 +279,32 @@ int ClientAccess::AddWord(QString word,QString isDaddy)
      */
     //TODO: spelling check
     QString un;
+    //if it's the user adding
     if("superuser"==isDaddy){
         un="superuser";
     }else{
         un=this->user->getUsername();
     }
-    QString query = QString("INSERT INTO words(word,length,username,wdate)\
-                            VALUES('%1',%2,'%3','%4')").arg(word).arg(word.size()).arg(un).arg(QDate::currentDate().toString(QString("yyyy-MM-dd")));
-    QSqlQuery q = udb.exec(query);
-    if(udb.lastError().isValid()){
+    //to see if it's been create by the super user
+    QString squery = QString("SELECT * FROM words WHERE word = '%1' AND username not like 'superuser'").arg(word);
+    QSqlQuery query(udb);
+    query.exec(squery);
+    if(query.next()){
+        qDebug()<<QString("add new word failed, %1 has been created by other user").arg(word);
+        return 0;
+    }
+    squery = QString("INSERT INTO words(word,length,username,wdate)\
+                    VALUES('%1',%2,'%3','%4')").arg(word).arg(word.size()).arg(un).arg(QDate::currentDate().toString(QString("yyyy-MM-dd")));
+    query.exec(squery);
+    if(query.lastError().isValid()){
+        qDebug()<<query.lastError();
         qDebug()<<"add new word failed.";
         return 0;
     }else{
         qDebug()<<"add new word succeed.";
-        user->vo->addOneWord(word);
+        if(isDaddy!="superuser"){
+            user->vo->addOneWord(word);
+        }
         return 1;
     }
 }
@@ -267,7 +313,7 @@ QString ClientAccess::GetOneWord(int len,QString start)
 {
     QString condition="";
     if(len!=-1){
-        condition+= QString("WHERE length = %1" ).arg(len);
+        condition+= QString("WHERE length >= %1" ).arg(len);
     }
 
     //a slow implementation   WHERE
@@ -290,18 +336,26 @@ QString ClientAccess::GetOneWord(int len,QString start)
     }
     return r;
 }
+void ClientAccess::SaveUserToDatabase()
+{
+    qDebug()<<"start to save user status to database";
+    QSqlQuery query(udb);
+    QString q=QString("UPDATE users \
+                       SET\
+                       c_stage= %1, c_level= %2, c_exp= %3, c_time =%4, v_stage= %5, v_level= %6, v_exp= %7, v_number=%8\
+                       WHERE username = '%9';")\
+                       .arg(user->ch->Stage()).arg(user->ch->Level()).arg(user->ch->Exp()).arg(user->ch->Accumulate())\
+                       .arg(user->vo->Stage()).arg(user->vo->Level()).arg(user->vo->Exp()).arg(user->vo->Accumulate())\
+                       .arg(user->getUsername());
+    query.exec(q);
+    if(query.lastError().isValid()){
+        qDebug()<<query.lastError();
+    }
+}
 void ClientAccess::DestoryUserWLogOut()
 {
-    //TODO: SAVE BEFORE DELETE
-    QString q=QString("UPDATE users \
-                   (SET\
-                   c_stage= %1, c_level= %2, c_exp= %3, c_time =%4,\
-                   v_stage= %5, v_level= %6, v_exp= %7, v_number=%8\
-                   WHERE username = '%9';")\
-                   .arg(user->ch->Stage()).arg(user->ch->Level()).arg(user->ch->Exp()).arg(user->ch->Accumulate())\
-                   .arg(user->vo->Stage()).arg(user->vo->Level()).arg(user->vo->Exp()).arg(user->vo->Accumulate())\
-                   .arg(user->getUsername());
-    udb.exec(q);
+    //SAVE BEFORE DELETE
+    SaveUserToDatabase();
     delete this->user;
 }
 
@@ -341,7 +395,6 @@ QString ClientAccess::loadCSV(QString filename)
             }
             lineindex++;
         }
-
         file.close();
         response=QString("load csv file successfully\nsucceed in %1 words\nfail at %2 words").arg(succount).arg(failcount);
     }else{

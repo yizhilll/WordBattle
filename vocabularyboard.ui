@@ -109,7 +109,7 @@
     <string>那谁，你好！</string>
    </property>
   </widget>
-  <widget class="QLabel" name="l_count">
+  <widget class="QLabel" name="l_stage">
    <property name="geometry">
     <rect>
      <x>50</x>
@@ -125,7 +125,7 @@
     <string>你已经在题库中贡献x个单词</string>
    </property>
   </widget>
-  <widget class="QLabel" name="l_count_2">
+  <widget class="QLabel" name="l_level">
    <property name="geometry">
     <rect>
      <x>50</x>
