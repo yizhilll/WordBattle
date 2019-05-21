@@ -45,12 +45,14 @@ int clientInterpretation(char *msg);
 
 int main(int argc,char **argv)
 {
-    //mysql
+    //mysql settings
     //connect to mysql server
     if (init_mysql())
         print_mysql_error(NULL);  
     //load or create database
     create_database();
+    //create online gaming related databse
+
 
     //socket parameters
     int listenfd, connfd;
@@ -66,7 +68,7 @@ int main(int argc,char **argv)
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     bind(listenfd, (struct sockaddr *)&sockaddr, sizeof(sockaddr));
-    listen(listenfd, 1024);
+    listen(listenfd, 30);
 
     printf("Please wait for the client information\n");
 
@@ -153,9 +155,12 @@ void create_table()
     if (iNum_rows == 0)
     {
         puts("create users table");
-        executesql("create table users(id_ int(11) unsigned primary key auto_increment,name_ char(255) not null unique,password_ char(32) not null,create_time_ datetime,creator_id_ int(11) unsigned,auth_type_ int(11) not null,dyn_sn_ char(10),dyn_pass_sn_ text,remark_ varchar(200),foreign key(creator_id_) references users(id_));");
+        // executesql("create table users(id_ int(11) unsigned primary key auto_increment,name_ char(255) not null unique,password_ char(32) not null,create_time_ datetime,creator_id_ int(11) unsigned,auth_type_ int(11) not null,dyn_sn_ char(10),dyn_pass_sn_ text,remark_ varchar(200),foreign key(creator_id_) references users(id_));");
     }
     mysql_free_result(g_res); //释放结果集
+    executesql("CREATE TABLE IF NOT EXISTS online\
+        (username varchar(255),\
+         ");
 }
 
 void init_administrator()
