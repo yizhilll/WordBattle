@@ -146,16 +146,29 @@ void create_database()
 }
 void create_table()
 {
-    sprintf(sql, "show tables;");
-    executesql(sql);
-    g_res = mysql_store_result(g_conn);
-    iNum_rows = mysql_num_rows(g_res);
-    if (iNum_rows == 0)
-    {
-        puts("create users table");
-        executesql("create table users(id_ int(11) unsigned primary key auto_increment,name_ char(255) not null unique,password_ char(32) not null,create_time_ datetime,creator_id_ int(11) unsigned,auth_type_ int(11) not null,dyn_sn_ char(10),dyn_pass_sn_ text,remark_ varchar(200),foreign key(creator_id_) references users(id_));");
-    }
-    mysql_free_result(g_res); //释放结果集
+    // sprintf(sql, "show tables;");
+    // executesql(sql);
+    // g_res = mysql_store_result(g_conn);
+    // iNum_rows = mysql_num_rows(g_res);
+    // if (iNum_rows == 0)
+    // {
+    //     puts("create users table");
+    //     executesql("create table users(id_ int(11) unsigned primary key auto_increment,name_ char(255) not null unique,password_ char(32) not null,create_time_ datetime,creator_id_ int(11) unsigned,auth_type_ int(11) not null,dyn_sn_ char(10),dyn_pass_sn_ text,remark_ varchar(200),foreign key(creator_id_) references users(id_));");
+    // }
+    // mysql_free_result(g_res); //释放结果集
+    executesql("CREATE TABLE IF NOT EXISTS online\
+            (username VARCHAR(128) PRIMARY KEY,\
+            c_level INT NOT NULL,\
+            c_stage INT NOT NULL,\
+            c_time  INT);")
+    executesql("CREATE TABLE IF NOT EXISTS onbattle\
+            (userA VARCHAR(128) PRIMARY KEY,\
+            scoreA INT DEFAULT 0,\
+            userB VARCHAR(128) DEFAULT 'none',\
+            scoreB INT DEFAULT 0,\
+            currentword VARCHAR(128) DEFAULT 'default',\
+            timeA INT DEFAULT 30,\
+            c_time  INT);")
 }
 
 void init_administrator()
