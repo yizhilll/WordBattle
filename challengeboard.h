@@ -20,7 +20,8 @@ public:
 private:
     Ui::ChallengeBoard *ui;
     ClientAccess *CA;
-
+    bool isOnlineMode;
+    bool isAggressive;
     void refreshStatus();
 
     int playtime;

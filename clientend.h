@@ -17,7 +17,7 @@
 
 #include <QFile>
 
-
+#include <QTcpSocket>
 
 class UserInfo
 {
@@ -95,8 +95,14 @@ public:
     QString execSuperSQL(QString query);
     QString loadCSV(QString filename="TOEFL核心词汇21天突破.CSV");
 
+    void getOnlineOffline(QString type);
+
     UserControl *user;
+    QString opposer;
+    bool isAggressive;
     QString releaseDebug;
+
+    QString OnlineStage;
 
 private:
 

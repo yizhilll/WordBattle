@@ -6,7 +6,7 @@
 
 QT       += core gui
 QT += sql
-
+QT += network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = WordBattle
@@ -31,6 +31,7 @@ SOURCES += \
         clientend.cpp \
         main.cpp \
         mainwindow.cpp \
+        online.cpp \
         rankwindow.cpp \
         vocabularyboard.cpp
 
@@ -39,6 +40,7 @@ HEADERS += \
         challengeboard.h \
         clientend.h \
         mainwindow.h \
+        online.h \
         rankwindow.h \
         vocabularyboard.h
 
@@ -46,6 +48,7 @@ FORMS += \
         accountwindow.ui \
         challengeboard.ui \
         mainwindow.ui \
+        online.ui \
         rankwindow.ui \
         vocabularyboard.ui
 

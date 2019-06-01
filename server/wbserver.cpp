@@ -11,31 +11,28 @@
 #include <time.h>
 
 //mysql parameters
-MYSQL *g_conn;    //mysql 链接
-MYSQL_RES *g_res; //mysql 记录集
-MYSQL_ROW g_row;  //字符串数组，mysql 记录行
+MYSQL conn;
+ 
+void connection(const char* host, const char* user, const char* password, const char* database) {
+	mysql_init(&conn); // 注意取地址符&
+ 
+	if (mysql_real_connect(&conn, host, user, password, database, 0, NULL, 0)) {
+		printf("Connection success!\n");
+	} else {
+		fprintf(stderr, "Connection failed!\n");
+		if (mysql_errno(&conn)) {
+			fprintf(stderr, "Connection error %d: %s\n", mysql_errno(&conn), mysql_error(&conn));
+		}
+		exit(EXIT_FAILURE);
+	}
+}
 
 const char *g_host_name = "localhost";
-const char *g_user_name = "root";
-const char *g_password = "asdfgh";
-const char *g_db_name = "test";
-const unsigned int g_db_port = 3306;
+const char *g_user_name = "wb";
+const char *g_password = "wb123";
+const char *g_db_name = "wordbattle";
+// const unsigned int g_db_port = 3306;
 
-#define MAX_BUF_SIZE 1024 //缓冲区最大字节数
-char sql[MAX_BUF_SIZE];
-char Time[MAX_BUF_SIZE];
-
-int iNum_rows = 0; //mysql语句执行结果返回行数赋初值
-int flag = 0;      //管理员权限开关
-int i = 1;         //系统运行开关
-
-//functions 
-int init_mysql();
-void print_mysql_error(const char *msg);
-int executesql(const char *sql);
-void create_database();
-void create_table();
-void init_administrator();
 
 //socket buffer line
 #define MAXLINE 1024
@@ -46,12 +43,7 @@ int clientInterpretation(char *msg);
 int main(int argc,char **argv)
 {
     //mysql
-    //connect to mysql server
-    if (init_mysql())
-        print_mysql_error(NULL);  
-    //load or create database
-    create_database();
-
+	connection(g_host_name, g_user_name, g_password, g_db_name);
     //socket parameters
     int listenfd, connfd;
     struct sockaddr_in sockaddr;
@@ -61,12 +53,13 @@ int main(int argc,char **argv)
     memset(&sockaddr, 0, sizeof(sockaddr));
 
     sockaddr.sin_family = AF_INET;
-    sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    sockaddr.sin_addr.s_addr = inet_addr("107.172.86.173");
     sockaddr.sin_port = htons(10004);
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     bind(listenfd, (struct sockaddr *)&sockaddr, sizeof(sockaddr));
-    listen(listenfd, 1024);
+    listen(listenfd, 30);
 
     printf("Please wait for the client information\n");
 
@@ -77,111 +70,136 @@ int main(int argc,char **argv)
             printf("accpet socket error: %s errno :%d\n", strerror(errno), errno);
             continue;
         }
-
         n = recv(connfd, buff, MAXLINE, 0);
         buff[n] = '\0';
-        printf("recv msg from client:%s", buff);
-
+        printf("recv msg from client:%s \n", buff);
         //execute gaming processing
-        
+        // char sendline[50];
+        clientInterpretation(buff);//,sendline
+        // send(listenfd,sendline,strlen(sendline),0);
 
-        
         close(connfd);
     }
     close(listenfd);
+    mysql_close(&conn);
 
 }
 //gamine
-int clientInterpretation(char *msg)
+int clientInterpretation(char msg[])//,char sendline[]
 {
-    char *cmd=strtok(msg,"|");
-    
+    char* user;
+    char* cmd=(char*)malloc(sizeof(char)*50);
+    char  memorystring[500];
+    char* sqlquery= memorystring;
+    char temp[50];
+    user=strtok(msg,"|");
+    strcpy(cmd,strtok(NULL,"|"));
+    // cmd=strtok(NULL,"|");
+
+    // char online[10]="online";
+    // char offline[10]="offline";
+    // printf("%s\n%s\n",online,offline);
+
+    // printf("debug1: processing message %s\n",cmd);
+    strcpy(temp,user);
+    printf(": processing message %c\n",cmd[1]);
+    // if(strcmp(online,cmd))
+    if(cmd[1]=='n'){
+        strcpy(sqlquery,"insert into online(username,c_level,c_stage,c_time) select username,c_level,c_stage,c_time from users where username = '");
+        sqlquery=strcat(sqlquery,temp);
+        sqlquery=strcat(sqlquery,"';");
+        printf("running: %s\n",sqlquery);
+        int res =mysql_query(&conn, sqlquery);
+        // if (!res) {
+        //     printf("affect %lu rows\n", (unsigned long)mysql_affected_rows(&conn));
+        // } else {
+        //     fprintf(stderr, "execution error %d: %s\n", mysql_errno(&conn), mysql_error(&conn));
+        // }
+    }
+    //delete user from online
+    else if(cmd[1]=='f'){
+        strcpy(sqlquery,"delete from online where username = '");
+        sqlquery=strcat(sqlquery,temp);
+        sqlquery=strcat(sqlquery,"';");
+        printf("running: %s\n",sqlquery);
+        int res =mysql_query(&conn, sqlquery);
+        // if (!res) {
+        //     printf("affect %lu rows\n", (unsigned long)mysql_affected_rows(&conn));
+        // } else {
+        //     fprintf(stderr, "execution error %d: %s\n", mysql_errno(&conn), mysql_error(&conn));
+        // }
+    }
+
+    //erro
+    else{
+        printf("wrong cmd from client!\n");
+    }
+    printf("finish a command processing\n");
 }
 
 
 //mysql
-int init_mysql()
-{
-    //init the database connection
-    g_conn = mysql_init(NULL);
-    //connection the database
-    if (!mysql_real_connect(g_conn, g_host_name, g_user_name, g_password, g_db_name, g_db_port, NULL, 0))
-        return -1; //链接失败
-    if (executesql("set names utf8"))
-        return -1;
-    return 0; //返回成功
-}
+// int init_mysql()
+// {
+//     //init the database connection
+//     g_conn = mysql_init(NULL);
+//     //connection the database
+//     if (!mysql_real_connect(g_conn, g_host_name, g_user_name, g_password, g_db_name, g_db_port, NULL, 0))
+//         return -1; //链接失败
+//     if (executesql("set names utf8"))
+//         return -1;
+//     return 0; //返回成功
+// }
 
-void print_mysql_error(const char *msg)
-{
-    if (msg)
-        printf("%s: %s\n", msg, mysql_error(g_conn));
-    else
-        puts(mysql_error(g_conn));
-}
-int executesql(const char *sql)
-{
-    if (mysql_real_query(g_conn, sql, strlen(sql)))
-        return -1;
-    return 0;
-}
-void create_database()
-{
-    sprintf(sql, "use wordbattle");
-    if (executesql(sql) == -1)
-    {
-        puts("create database");
-        executesql("create database wordbattle;");
-        print_mysql_error(NULL);
-        puts("choice database");
-        executesql("use wordbattle;");
-        print_mysql_error(NULL);
-        puts("!!!Initialize the success!!!");
-    }
-    else
-    {
-        executesql("use wordbattle;");
-        print_mysql_error(NULL);
-    }
-}
-void create_table()
-{
-    // sprintf(sql, "show tables;");
-    // executesql(sql);
-    // g_res = mysql_store_result(g_conn);
-    // iNum_rows = mysql_num_rows(g_res);
-    // if (iNum_rows == 0)
-    // {
-    //     puts("create users table");
-    //     executesql("create table users(id_ int(11) unsigned primary key auto_increment,name_ char(255) not null unique,password_ char(32) not null,create_time_ datetime,creator_id_ int(11) unsigned,auth_type_ int(11) not null,dyn_sn_ char(10),dyn_pass_sn_ text,remark_ varchar(200),foreign key(creator_id_) references users(id_));");
-    // }
-    // mysql_free_result(g_res); //释放结果集
-    executesql("CREATE TABLE IF NOT EXISTS online\
-            (username VARCHAR(128) PRIMARY KEY,\
-            c_level INT NOT NULL,\
-            c_stage INT NOT NULL,\
-            c_time  INT);")
-    executesql("CREATE TABLE IF NOT EXISTS onbattle\
-            (userA VARCHAR(128) PRIMARY KEY,\
-            scoreA INT DEFAULT 0,\
-            userB VARCHAR(128) DEFAULT 'none',\
-            scoreB INT DEFAULT 0,\
-            currentword VARCHAR(128) DEFAULT 'default',\
-            timeA INT DEFAULT 30,\
-            c_time  INT);")
-}
-
-void init_administrator()
-{
-    sprintf(sql, "select * from users where id_='1' and name_='root';");
-    executesql(sql);
-    g_res = mysql_store_result(g_conn);
-    iNum_rows = mysql_num_rows(g_res);
-    if (iNum_rows == 0)
-    {
-        puts("Init Administrtor User");
-        sprintf(sql, "insert into users values(1,'root','root','2017-08-18 12:21:11',1,0,'','','0:VIP 1:local pwd 2:local cert');");
-        executesql(sql);
-    }
-    mysql_free_result(g_res); //释放结果集
-}
+// void print_mysql_error(const char *msg)
+// {
+//     if (msg)
+//         printf("%s: %s\n", msg, mysql_error(g_conn));
+//     else
+//         puts(mysql_error(g_conn));
+// }
+// int executesql(const char *sql)
+// {
+//     printf("executing %s \n",sql);
+//     if (mysql_real_query(g_conn, sql, strlen(sql)))
+//         return -1;
+//     return 0;
+// }
+// void create_database()
+// {
+//     sprintf(sql, "use wordbattle;");
+//     if (executesql(sql) == -1)
+//     {
+//         puts("create database");
+//         executesql("create database wordbattle;");
+//         print_mysql_error(NULL);
+//         puts("choice database");
+//         executesql("use wordbattle;");
+//         print_mysql_error(NULL);
+//         puts("!!!Initialize the success!!!");
+//     }
+//     else
+//     {
+//         executesql("use wordbattle;");
+//         print_mysql_error(NULL);
+//     }
+// }
+// void create_table()
+// {
+    
+//     executesql("CREATE TABLE IF NOT EXISTS online\
+//             (username VARCHAR(128) PRIMARY KEY,\
+//             c_stage INT NOT NULL,\
+//             c_level INT NOT NULL,\
+//             c_time  INT);");
+//     executesql("CREATE TABLE IF NOT EXISTS onbattle\
+//             (userA VARCHAR(128) PRIMARY KEY,\
+//             scoreA INT DEFAULT -1,\
+//             userB VARCHAR(128) DEFAULT 'none',\
+//             scoreB INT DEFAULT -1,\
+//             state INT DEFAULT 0,\
+//             currentround INT DEFAULT -1,\
+//             currentword VARCHAR(128) DEFAULT 'default',\
+//             timeA INT DEFAULT 30,\
+//             timeB INT DEFAULT 30);");
+// }

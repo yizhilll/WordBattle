@@ -18,6 +18,8 @@ ChallengeBoard::ChallengeBoard(QWidget *parent, ClientAccess *CA) :
     ui->l_word->hide();
     ui->tips_skip->hide();
     ui->l_worddis->hide();
+    isOnlineMode=false;
+    isAggressive=false;
 }
 
 

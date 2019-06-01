@@ -76,7 +76,7 @@ UserControl::~UserControl()
 
 //-------------------------------------
 ClientAccess::ClientAccess()
-{    
+{    this->opposer="none";
     //需要进行判断默认的连接名是否存在，
     //如果不存在才使用addDatabase()方法，如果存在则使用database()方法
     if(QSqlDatabase::contains("qt_sql_default_connection")){
@@ -89,7 +89,7 @@ ClientAccess::ClientAccess()
     udb.setUserName("root");
     udb.setPassword("000000");
     udb.setDatabaseName("wordbattle");
-
+     OnlineStage="Offline";
     if (!udb.isValid()){
         qDebug() << udb.lastError().text();
         return;
@@ -182,22 +182,61 @@ QList<QList<QString>> ClientAccess::SearchTop(QString type,QString attribute,int
         a1=QString("c_stage");
         a2=QString("c_level");
         a3=QString("c_time");
-    }else{
+    }else if("Vocabulor" == type){
         a1=QString("v_stage");
         a2=QString("v_level");
         a3=QString("v_number");
+    }else if("OnlineUser"==type){
+        a1=QString("c_stage");
+        a2=QString("c_level");
+        a3=QString("c_time");
+    }else if("userA"==type||"userB"==type){
+        qDebug()<<"searching onbattle challenge";
+    }else if("onbattle"==type){
+        qDebug()<<"searching onbattle information";
     }
-    QString q=QString("SELECT username, %1, %2, %3 \
-                    FROM users\
-                    ORDER BY %4 DESC\
-                    LIMIT %5;")\
-            .arg(a1).arg(a2).arg(a3).arg(attribute).arg(num);
+    else{
+        qDebug()<<"Wrong search type!";
+    }
+    QString q;
+    if("OnlineUser"==type){
+        q=QString("SELECT username, %1, %2, %3 \
+                        FROM online\
+                        ORDER BY %4 DESC\
+                        LIMIT %5;")\
+                .arg(a1).arg(a2).arg(a3).arg(attribute).arg(num);
+
+    }else if("userA"==type||"userB"==type){
+        q=QString("SELECT userA, scoreA, userB, scoreB \
+                        FROM onbattle\
+                        WHERE %1 = '%2'\
+                        LIMIT %3;")\
+                .arg(type).arg(user->getUsername()).arg(num);
+    }else if("onbattle"==type){
+        //用 attribute 来标记搜索类型
+        q=QString("SELECT * \
+                    FROM onbattle\
+                    WHERE %1 = '%2'\
+                    LIMIT %3;")\
+            .arg(attribute).arg(user->getUsername()).arg(num);
+    }
+    else{
+        q=QString("SELECT username, %1, %2, %3 \
+                        FROM users\
+                        ORDER BY %4 DESC\
+                        LIMIT %5;")\
+                .arg(a1).arg(a2).arg(a3).arg(attribute).arg(num);
+    }
     QSqlQuery query=udb.exec(q);
     qDebug()<<query.lastError();
 
     while(query.next()){
         QList<QString> tem;
-        for(int j=0;j<4;j++){
+        int border=4;
+        if("onbattle"==type){
+            border=9;
+        }
+        for(int j=0;j<border;j++){
             tem.append(query.value(j).toString());
         }
         r.append(tem);
@@ -355,6 +394,7 @@ void ClientAccess::SaveUserToDatabase()
 void ClientAccess::DestoryUserWLogOut()
 {
     //SAVE BEFORE DELETE
+    OnlineStage="Offline";
     SaveUserToDatabase();
     delete this->user;
 }
@@ -363,6 +403,7 @@ QString ClientAccess::execSuperSQL(QString query)
 {
     QSqlQuery q= udb.exec(query);
     if(q.lastError().isValid()){
+        qDebug()<<"super sql wrong: "<<q.lastError().text();
         return q.lastError().text();
     }else{
         return QString("SQL executed successfully");
@@ -403,7 +444,34 @@ QString ClientAccess::loadCSV(QString filename)
     }
     return response;
 }
-
+void ClientAccess::getOnlineOffline(QString type)
+{
+    QTcpSocket* socket= new QTcpSocket();
+    socket->connectToHost(QString("127.0.0.1"),10004);
+    socket->waitForConnected();
+    QString data;
+    if("getOnline"==type){
+        data=QString("%1|online|").arg(user->getUsername());
+    }else{
+        data=QString("%1|offline|").arg(user->getUsername());
+    }
+    socket->write(data.toLatin1());
+    socket->disconnectFromHost();
+//    socket->waitForDisconnected();
+    QString query;
+    if("getOnline"==type){
+        query= QString("INSERT INTO online(username,c_stage,c_level,c_time)\
+                              VALUES('%1',%2,'%3','%4')")\
+                       .arg(user->getUsername()).arg(user->ch->Stage()).arg(user->ch->Level()).arg(user->ch->Accumulate());
+        OnlineStage="Online";
+    }else if("getOffline"==type){
+        query= QString("DELETE\
+                        FROM online\
+                        WHERE username= '%1'").arg(user->getUsername());
+        OnlineStage="Offline";
+    }
+    QSqlQuery q = udb.exec(query);
+}
 ClientAccess::~ClientAccess()
 {
     delete user;
